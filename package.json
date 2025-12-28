@@ -1,0 +1,21 @@
+{
+  "name": "salesforce-test-automation-playwright",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.0",
+    "allure-playwright": "^3.4.3"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^12.4.0",
+    "@playwright/mcp": "^0.0.48",
+    "exceljs": "^4.3.0"
+  }
+}
