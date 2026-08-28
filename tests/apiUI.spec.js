@@ -1,10 +1,7 @@
-const {test, expect, chromium} = require("@playwright/test");
+const {test, expect} = require("@playwright/test");
+const { loginWithJwt } = require("./helpers/salesforceAuth");
 
-const fs = require('fs');
-const path = require('path');
-const { text } = require("stream/consumers");
-
-test('@E2E SFDC - UI + API Script', async ({ request }) => {
+test('@E2E SFDC - UI + API Script', async ({ request, page }) => {
 
     //API Scripts
 
@@ -76,28 +73,8 @@ test('@E2E SFDC - UI + API Script', async ({ request }) => {
 
     // UI Scripts
 
-    const userDataDirectory = path.resolve(__dirname, '../sf-profile');
-    
-      const context = await chromium.launchPersistentContext(userDataDirectory, {
-        headless: false,
-        args: ['--start-maximized'],
-      });
-    
-      const page = await context.newPage();
-    
-      await page.goto("https://login.salesforce.com");
-    
-      await expect(page).toHaveTitle("Login | Salesforce");
-    
-        await page.locator('#username').fill(process.env.sit_salesforce_username);
-        await page.locator('#password').fill(process.env.sit_salesforce_password);
-        await page.locator('#Login').click();
-    
-        //for the first manually enter the token from your email
-    
-        await page.waitForURL("**/lightning/**", {timeout : 60000});
-
-        await page.goto('https://sf-test-automation-dev-ed.develop.lightning.force.com/lightning/o/Contact/list?filterName=__Recent');
+    // JWT bearer login (no username/password screen), landing on the Contact list.
+    await loginWithJwt(page, '/lightning/o/Contact/list?filterName=__Recent');
 
         const newButton = page.locator("[title='New']").first();
 

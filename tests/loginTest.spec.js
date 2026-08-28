@@ -1,5 +1,6 @@
 const {test, expect, chromium} = require("@playwright/test");
 const path = require("path");
+const { jwtAuthenticate, jwtLogin } = require("./helpers/salesforceAuth");
 
 const userDataDirectory = path.resolve(__dirname, '../sf-profile');
 
@@ -7,7 +8,7 @@ let context;
 let page;
 
 // //runs only once before all tests in the file
-// test.beforeAll() 
+// test.beforeAll()
 
 // //runs only once after all tests in the file
 // test.afterAll()
@@ -24,21 +25,18 @@ test.beforeAll(async () => {
         args: ['--start-maximized'],
     });
     page = await context.newPage();
-    await page.goto("https://login.salesforce.com");
 
-  await expect(page).toHaveTitle("Login | Salesforce");
+    // JWT bearer flow instead of the username/password login screen.
+    const session = await jwtAuthenticate();
+    await jwtLogin(page, session, "/lightning/page/home");
+    await expect(page).toHaveURL(/\/lightning\//);
 
-    await page.locator('#username').fill(process.env.sit_salesforce_username);
-    await page.locator('#password').fill(process.env.sit_salesforce_password);
-    await page.locator('#Login').click();
-    //for the first manually enter the token from your email
-    await page.waitForURL("**/lightning/**", {timeout : 60000});
     await context.storageState({path: 'sf-profile/state.json'});
 });
 
 
 
-test("Login Test", async () => { 
+test("Login Test", async () => {
 
     await page.goto("https://sf-test-automation-dev-ed.develop.lightning.force.com/lightning/o/Case/list?filterName=__Recent");
     const newButton = page.locator("[title='New']").first();
@@ -62,5 +60,3 @@ test("Handle Dropdown in SFDC", async() => {
     await dropdownValue.waitFor();
     await dropdownValue.click();
 });
-
-

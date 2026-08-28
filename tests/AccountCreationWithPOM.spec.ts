@@ -23,19 +23,8 @@ test("Account creation in SFDC using POM", async() => {
 
   const loginPage = new LoginPage(page);
 
-  //First way to get env variables
-  // await loginPage.loginToSalesforce(process.env.sit_salesforce_username || "", process.env.sit_salesforce_password || "");
-
-  //Second way to get env variables
-  // const username = process.env.sit_salesforce_username;
-  // const password = process.env.sit_salesforce_password;
-  // if (!username || !password) {
-  //   throw new Error("Environment variables for Salesforce credentials are not set");
-  // }
-  // await loginPage.loginToSalesforce(username,password);
-
-  //Third way to get env variables
-  await loginPage.loginToSalesforce(loginPage.getEnv("sit_salesforce_username"), loginPage.getEnv("sit_salesforce_password"));  
+  // JWT bearer login (no username/password screen) — credentials come from SF_* env vars.
+  await loginPage.loginToSalesforce();
 
   await loginPage.assertLoginSuccess();
 
@@ -75,7 +64,8 @@ test("@Smoke Account Creation", async() => {
 
   const loginPage = new LoginPage(page);
 
-  await loginPage.loginToSalesforce(loginPage.getEnv("sit_salesforce_username"), loginPage.getEnv("sit_salesforce_password"));
+  // JWT bearer login (no username/password screen) — credentials come from SF_* env vars.
+  await loginPage.loginToSalesforce();
   await loginPage.assertLoginSuccess();
 
 

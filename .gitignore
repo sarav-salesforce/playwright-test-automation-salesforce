@@ -12,3 +12,24 @@ allure-report/
 sf-profile/
 sf-project/
 test-results/
+
+# Editors / OS
+.idea/
+.DS_Store
+
+# Local Salesforce credentials / secrets — never commit these
+.env
+.env.*
+!.env.example
+.keys_backup/
+cert/
+server.key
+server.crt
+*.key
+*.crt
+*.cer
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore

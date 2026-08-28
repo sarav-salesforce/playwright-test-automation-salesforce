@@ -1,37 +1,11 @@
-const {test, expect, chromium} = require("@playwright/test");
-
-const fs = require('fs');
-const path = require('path');
+const {test, expect} = require("@playwright/test");
+const { loginWithJwt } = require("./helpers/salesforceAuth");
 
 
-test("Account creation in SFDC", async() => {
+test("Account creation in SFDC", async({ page }) => {
 
-  const userDataDirectory = path.resolve(__dirname, '../sf-profile');
-
-  const context = await chromium.launchPersistentContext(userDataDirectory, {
-    headless: false,
-    args: ['--start-maximized'],
-  });
-
-  const page = await context.newPage();
-
-  await page.goto("https://login.salesforce.com");
-
-  await expect(page).toHaveTitle("Login | Salesforce");
-
-    await page.locator('#username').fill("");
-    await page.locator('#password').fill("");
-    await page.locator('#Login').click();
-
-    //for the first manually enter the token from your email
-
-    await page.waitForURL("**/lightning/**", {timeout : 60000});
-
-    const elementText = page.locator('.slds-badge_lightest.slds-badge').nth(3);
-
-    await expect(elementText).toContainText("1 In Progress");
-
-    await page.goto("https://sf-test-automation-dev-ed.develop.lightning.force.com/lightning/o/Account/list?filterName=__Recent");
+  // JWT bearer login (no username/password screen), landing on the Account list.
+  await loginWithJwt(page, "/lightning/o/Account/list?filterName=__Recent");
 
     const newButton = page.locator("[title='New']").first();
 
@@ -47,7 +21,7 @@ test("Account creation in SFDC", async() => {
 
     await accountName.fill(accName);
 
-    
+
     //Account Number
     const accountNumber = page.locator("[name='AccountNumber']");
 
@@ -99,38 +73,12 @@ test("Account creation in SFDC", async() => {
 });
 
 
-test("AAdvance locator handle in Salesforce", async() => {
+test("AAdvance locator handle in Salesforce", async({ page }) => {
 
-  const userDataDirectory = path.resolve(__dirname, '../sf-profile');
-
-  const context = await chromium.launchPersistentContext(userDataDirectory, {
-    headless: false,
-    args: ['--start-maximized'],
-  });
-
-  const page = await context.newPage();
-
-  await page.goto("https://login.salesforce.com");
-
-  await expect(page).toHaveTitle("Login | Salesforce");
-
-    await page.locator('#username').fill("");
-    await page.locator('#password').fill("");
-    await page.locator('#Login').click();
-
-    //for the first manually enter the token from your email
-
-    await page.waitForURL("**/lightning/**", {timeout : 60000});
-
-    const elementText = page.locator('.slds-badge_lightest.slds-badge').nth(3);
-
-    await expect(elementText).toContainText("1 In Progress");
-
-    await page.goto("https://sf-test-automation-dev-ed.develop.lightning.force.com/lightning/o/Account/list?filterName=__Recent");
-
+  await loginWithJwt(page, "/lightning/o/Account/list?filterName=__Recent");
 
     //Placeholder
-    
+
     const searchBarInAccountListView = page.getByPlaceholder("Search this list...");
 
     await searchBarInAccountListView.fill("Playwright");

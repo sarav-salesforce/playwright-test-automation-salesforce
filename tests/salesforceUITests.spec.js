@@ -1,5 +1,12 @@
-const {test, expect, chromium} = require("@playwright/test");
+const {test, expect} = require("@playwright/test");
+const { loginWithJwt } = require("./helpers/salesforceAuth");
 
+// ---------------------------------------------------------------------------
+// Login-screen behaviour tests (intentionally NOT authenticated).
+// These exercise the public https://login.salesforce.com form itself with
+// empty credentials to assert its validation messaging — they are not a way
+// of signing in, so the JWT flow does not apply to them.
+// ---------------------------------------------------------------------------
 
 test("Salesforce UI interactions", async ({page}) => {
 
@@ -46,73 +53,23 @@ test("Salesforce UI - mulitple element handle", async ({page}) => {
 
 });
 
-const fs = require('fs');
-const path = require('path');
-const { text } = require("stream/consumers");
+// ---------------------------------------------------------------------------
+// Authenticated UI tests — sign in with the JWT bearer flow (no username /
+// password screen) via loginWithJwt(page, <relative lightning path>).
+// ---------------------------------------------------------------------------
 
-test("Test with Same browser", async() => {
+test("Test with Same browser", async({ page }) => {
 
-  //absolute path
-  //C:\Users\sarav\salesforce-test-automation-playwright\sf-profile
-  
-  //Relative path
-  //sf-profile
+  await loginWithJwt(page, "/lightning/page/home");
 
-  const userDataDirectory = path.resolve(__dirname, '../sf-profile');
-
-  const context = await chromium.launchPersistentContext(userDataDirectory, {
-    headless: false,
-    args: ['--start-maximized'],
-  });
-
-  const page = await context.newPage();
-
-  await page.goto("https://login.salesforce.com");
-
-  await expect(page).toHaveTitle("Login | Salesforce");
-
-    await page.locator('#username').fill("");
-    await page.locator('#password').fill("");
-    await page.locator('#Login').click();
-
-    //for the first manually enter the token from your email
-
-    await page.waitForURL("**/lightning/**", {timeout : 60000});
-
-    const elementText = page.locator('.slds-badge_lightest.slds-badge').nth(3);
-
-    await expect(elementText).toContainText("1 In Progress");
+  await expect(page).toHaveURL(/\/lightning\//);
+  await expect(page.locator("#oneHeader")).toBeVisible();
 });
 
 
-test("Handle Dropdown in SFDC", async() => {
+test("Handle Dropdown in SFDC", async({ page }) => {
 
-  const userDataDirectory = path.resolve(__dirname, '../sf-profile');
-
-  const context = await chromium.launchPersistentContext(userDataDirectory, {
-    headless: false,
-    args: ['--start-maximized'],
-  });
-
-  const page = await context.newPage();
-
-  await page.goto("https://login.salesforce.com");
-
-  await expect(page).toHaveTitle("Login | Salesforce");
-
-    await page.locator('#username').fill("");
-    await page.locator('#password').fill("");
-    await page.locator('#Login').click();
-
-    //for the first manually enter the token from your email
-
-    await page.waitForURL("**/lightning/**", {timeout : 60000});
-
-    const elementText = page.locator('.slds-badge_lightest.slds-badge').nth(3);
-
-    await expect(elementText).toContainText("1 In Progress");
-
-    await page.goto("https://sf-test-automation-dev-ed.develop.lightning.force.com/lightning/o/Account/list?filterName=__Recent");
+  await loginWithJwt(page, "/lightning/o/Account/list?filterName=__Recent");
 
     const newButton = page.locator("[title='New']").first();
 
@@ -135,34 +92,9 @@ test("Handle Dropdown in SFDC", async() => {
 });
 
 
-test("Handle checkbox in SFDC", async() => {
+test("Handle checkbox in SFDC", async({ page }) => {
 
-  const userDataDirectory = path.resolve(__dirname, '../sf-profile');
-
-  const context = await chromium.launchPersistentContext(userDataDirectory, {
-    headless: false,
-    args: ['--start-maximized'],
-  });
-
-  const page = await context.newPage();
-
-  await page.goto("https://login.salesforce.com");
-
-  await expect(page).toHaveTitle("Login | Salesforce");
-
-    await page.locator('#username').fill("");
-    await page.locator('#password').fill("");
-    await page.locator('#Login').click();
-
-    //for the first manually enter the token from your email
-
-    await page.waitForURL("**/lightning/**", {timeout : 60000});
-
-    const elementText = page.locator('.slds-badge_lightest.slds-badge').nth(3);
-
-    await expect(elementText).toContainText("1 In Progress");
-
-    await page.goto("https://sf-test-automation-dev-ed.develop.lightning.force.com/lightning/o/Case/list?filterName=__Recent");
+  await loginWithJwt(page, "/lightning/o/Case/list?filterName=__Recent");
 
     const newButton = page.locator("[title='New']").first();
 
@@ -174,72 +106,22 @@ test("Handle checkbox in SFDC", async() => {
 
     await checkbox.waitFor();
 
-    await checkbox.click();   
-
-    // const checkbox = page.locator("//input[@type='checkbox']");
-
-    // await checkbox.waitFor();
-
-    // await checkbox.check();
+    await checkbox.click();
 });
 
 
-test("Handle Tabs in SFDC", async() => {
+test("Handle Tabs in SFDC", async({ page }) => {
 
-  const userDataDirectory = path.resolve(__dirname, '../sf-profile');
-
-  const context = await chromium.launchPersistentContext(userDataDirectory, {
-    headless: false,
-    args: ['--start-maximized'],
-  });
-
-  const page = await context.newPage();
-
-  await page.goto("https://login.salesforce.com");
-
-  await expect(page).toHaveTitle("Login | Salesforce");
-
-    await page.locator('#username').fill("");
-    await page.locator('#password').fill("");
-    await page.locator('#Login').click();
-
-    //for the first manually enter the token from your email
-
-    await page.waitForURL("**/lightning/**", {timeout : 60000});
-
-    const elementText = page.locator('.slds-badge_lightest.slds-badge').nth(3);
-
-    await expect(elementText).toContainText("1 In Progress");
-
+  await loginWithJwt(page, "/lightning/page/home");
 
     await page.locator("[data-key='question']").click();
 
-    
     const [newPage] = await Promise.all([
-      context.waitForEvent('page'),
-      await page.locator("//span[text()='Go to Trailhead']").click()
+      page.context().waitForEvent('page'),
+      page.locator("//span[text()='Go to Trailhead']").click()
     ]);
 
     console.log(await newPage.title());
     await expect(newPage).toHaveTitle("Trailhead | The fun way to learn");
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -22,7 +22,8 @@ test("Contact creation in SFDC using POM", async () => {
 
   const loginPage = new LoginPage(page);
 
-  await loginPage.loginToSalesforce(loginPage.getEnv("sit_salesforce_username"), loginPage.getEnv("sit_salesforce_password"));
+  // JWT bearer login (no username/password screen) — credentials come from SF_* env vars.
+  await loginPage.loginToSalesforce();
   await loginPage.assertLoginSuccess();
 
 
@@ -62,7 +63,8 @@ test("Contact Creation", async () => {
 
   const loginPage = new LoginPage(page);
 
-  await loginPage.loginToSalesforce(loginPage.getEnv("sit_salesforce_username"), loginPage.getEnv("sit_salesforce_password"));
+  // JWT bearer login (no username/password screen) — credentials come from SF_* env vars.
+  await loginPage.loginToSalesforce();
   await loginPage.assertLoginSuccess();
 
 
