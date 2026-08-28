@@ -1,14 +1,44 @@
+# Dependencies
+node_modules/
 
 # Playwright
-node_modules/
 /test-results/
+test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
 allure-results/
 allure-report/
+
+# Editors / OS
 .vscode/
+.idea/
+.DS_Store
+
+# Salesforce CLI scratch
 sf-profile/
 sf-project/
-test-results/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local Salesforce credentials / secrets — never commit these
+.env
+.env.*
+!.env.example
+.keys_backup/
+server.key
+server.crt
+*.key
+*.crt
+*.cer
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore

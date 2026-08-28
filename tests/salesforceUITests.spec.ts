@@ -1,5 +1,5 @@
-const { test, expect } = require("@playwright/test");
-const { jwtAuthenticate, jwtLogin, loginWithJwt } = require("./helpers/salesforceAuth");
+import { test, expect } from "@playwright/test";
+import { jwtAuthenticate, jwtLogin, loginWithJwt } from "./helpers/salesforceAuth";
 
 // ---------------------------------------------------------------------------
 // JWT login coverage

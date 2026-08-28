@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test --project=ts",
+    "test:js": "playwright test --project=js",
+    "test:all": "playwright test",
+    "auth:jwt": "tsx scripts/salesforceJwtToken.ts",
+    "auth:jwt:js": "node scripts/salesforceJwtToken.js",
+    "typecheck": "tsc --noEmit"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -11,11 +18,8 @@
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/node": "^24.10.0",
-    "allure-playwright": "^3.4.3"
-  },
-  "dependencies": {
-    "@cucumber/cucumber": "^12.4.0",
-    "@playwright/mcp": "^0.0.48",
-    "exceljs": "^4.3.0"
+    "allure-playwright": "^3.4.3",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
   }
 }
