@@ -22,6 +22,11 @@ screen.
 | A Connected App / External Client App | Configured for the JWT bearer flow (see below) |
 | An RSA key pair | Private key stays local; the certificate is uploaded to the Connected App |
 
+> **Check your Node version first:** run `node -v`. You need **20.12 or newer** (Node 22 LTS recommended).
+> If a spec fails with "No tests found", scroll up to the first red line of the error:
+> - `Cannot find module './helpers/salesforceAuth'`: make sure `tests/helpers/salesforceAuth.js` exists (pull the latest repo).
+> - `process.loadEnvFile is not a function`: update Node.js, then run `npm install` again.
+
 ## Setup
 
 ```bash

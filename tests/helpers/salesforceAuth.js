@@ -2,11 +2,26 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 
-try {
-  process.loadEnvFile();
-} catch (error) {
-  if (error.code !== "ENOENT") throw error;
+// Load .env: use Node's built-in loader (20.12+), else a small fallback parser
+function loadEnv(file = path.resolve(process.cwd(), ".env")) {
+  if (typeof process.loadEnvFile === "function") {
+    try {
+      process.loadEnvFile(file);
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    return;
+  }
+  if (!fs.existsSync(file)) return;
+  for (const line of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
+    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)\s*$/);
+    if (!match || line.trim().startsWith("#")) continue;
+    let value = match[2].trim();
+    if (/^(["']).*\1$/.test(value)) value = value.slice(1, -1);
+    if (process.env[match[1]] === undefined) process.env[match[1]] = value;
+  }
 }
+loadEnv();
 
 function getEnv(...names) {
   for (const name of names) {
